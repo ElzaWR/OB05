@@ -48,3 +48,110 @@ def display_message(msg, color):
 def draw_snake(snake_block_size, snake_list):
     for segment in snake_list:
         pygame.draw.rect(screen, BLACK, [segment[0], segment[1], snake_block_size, snake_block_size])
+
+
+# Главная функция для управления логикой игры
+def game_loop():
+    game_over = False
+    game_close = False
+
+    # Начальная позиция змейки
+    x1 = SCREEN_WIDTH / 2
+    y1 = SCREEN_HEIGHT / 2
+
+    # Начальные изменения координат
+    x1_change = 0
+    y1_change = 0
+
+    # Список для хранения сегментов змейки и её начальная длина
+    snake_list = []
+    length_of_snake = 1
+
+    # Генерация координат еды
+    food_x = round(random.randrange(0, SCREEN_WIDTH - SNAKE_BLOCK_SIZE) / SNAKE_BLOCK_SIZE) * SNAKE_BLOCK_SIZE
+    food_y = round(random.randrange(0, SCREEN_HEIGHT - SNAKE_BLOCK_SIZE) / SNAKE_BLOCK_SIZE) * SNAKE_BLOCK_SIZE
+
+    # Пока игрок не проиграл
+    while not game_over:
+
+        # Если игрок проиграл, предлагаем начать заново или выйти
+        while game_close:
+            screen.fill(WHITE)
+            display_message("Вы проиграли! Нажмите Q для выхода или C для новой игры", RED)
+            pygame.display.update()
+
+            # Слушаем действия пользователя
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        game_over = True
+                        game_close = False
+                    if event.key == pygame.K_c:
+                        game_loop()
+
+        # Обрабатываем события клавиш для управления
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    x1_change = -SNAKE_BLOCK_SIZE
+                    y1_change = 0
+                elif event.key == pygame.K_RIGHT:
+                    x1_change = SNAKE_BLOCK_SIZE
+                    y1_change = 0
+                elif event.key == pygame.K_UP:
+                    y1_change = -SNAKE_BLOCK_SIZE
+                    x1_change = 0
+                elif event.key == pygame.K_DOWN:
+                    y1_change = SNAKE_BLOCK_SIZE
+                    x1_change = 0
+
+        # Проверяем выход за границы экрана
+        if x1 >= SCREEN_WIDTH or x1 < 0 or y1 >= SCREEN_HEIGHT or y1 < 0:
+            game_close = True
+
+        # Обновляем координаты головы змейки
+        x1 += x1_change
+        y1 += y1_change
+
+        # Заполняем экран белым цветом и рисуем еду
+        screen.fill(WHITE)
+        pygame.draw.rect(screen, GREEN, [food_x, food_y, SNAKE_BLOCK_SIZE, SNAKE_BLOCK_SIZE])
+
+        # Создаем голову змейки и добавляем в список её сегментов
+        snake_head = []
+        snake_head.append(x1)
+        snake_head.append(y1)
+        snake_list.append(snake_head)
+
+        # Если длина списка сегментов змейки превышает её длину, удаляем первый сегмент
+        if len(snake_list) > length_of_snake:
+            del snake_list[0]
+
+        # Проверяем столкновение головы с телом
+        for segment in snake_list[:-1]:
+            if segment == snake_head:
+                game_close = True
+
+        # Рисуем змейку и отображаем текущий счёт
+        draw_snake(SNAKE_BLOCK_SIZE, snake_list)
+        display_score(length_of_snake - 1)
+
+        # Обновляем экран
+        pygame.display.update()
+
+        # Проверяем, съела ли змейка еду
+        if x1 == food_x and y1 == food_y:
+            # Генерация новой еды
+            food_x = round(random.randrange(0, SCREEN_WIDTH - SNAKE_BLOCK_SIZE) / SNAKE_BLOCK_SIZE) * SNAKE_BLOCK_SIZE
+            food_y = round(random.randrange(0, SCREEN_HEIGHT - SNAKE_BLOCK_SIZE) / SNAKE_BLOCK_SIZE) * SNAKE_BLOCK_SIZE
+            # Увеличение длины змейки
+            length_of_snake += 1
+
+        # Устанавливаем скорость игры
+        clock.tick(SNAKE_SPEED)
+
+    # Завершаем Pygame и выходим из программы
+    pygame.quit()
+    quit()
