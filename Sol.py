@@ -155,3 +155,7 @@ def game_loop():
     # Завершаем Pygame и выходим из программы
     pygame.quit()
     quit()
+
+
+# Запуск основного цикла игры
+game_loop()
