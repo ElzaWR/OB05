@@ -32,3 +32,15 @@ score_font = pygame.font.SysFont("comicsansms", 35)
 
 # Часы для контроля скорости обновления экрана
 clock = pygame.time.Clock()
+
+# Функция для отображения текущего счёта
+def display_score(score):
+    value = score_font.render(f"Ваш счёт: {score}", True, GREEN)
+    screen.blit(value, [0, 0])
+
+# Функция для отображения сообщений (например, проигрыш)
+def display_message(msg, color):
+    mesg = font_style.render(msg, True, color)
+    screen.blit(mesg, [SCREEN_WIDTH / 6, SCREEN_HEIGHT / 3])
+
+
