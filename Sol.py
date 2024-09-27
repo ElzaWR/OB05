@@ -44,3 +44,7 @@ def display_message(msg, color):
     screen.blit(mesg, [SCREEN_WIDTH / 6, SCREEN_HEIGHT / 3])
 
 
+# Функция для отрисовки змейки
+def draw_snake(snake_block_size, snake_list):
+    for segment in snake_list:
+        pygame.draw.rect(screen, BLACK, [segment[0], segment[1], snake_block_size, snake_block_size])
